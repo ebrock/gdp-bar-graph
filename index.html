@@ -24,18 +24,24 @@
 			var date = dataset[0];
 			var gdp = dataset[1];
 
-			console.log("date: ---");
-			console.log(date);
-			// console.log(data)
+			console.log("years: ----------");
 
-			const w = 1000;
-			const h = 1000;
+			var years = [];
+
+			dataset.forEach(d => {
+				years.push(d[0].match(/\d{4}/gm));
+				console.log(d[0].match(/\d{4}/gm));
+			});
+			console.log(years);
+
+			const w = 500;
+			const h = 500;
 			const padding = 60;
 
-			// Create x scale (date).
+			// Create x scale (year).
 			const xScale = d3.scaleLinear()
-											 .domain([0, d3.max(dataset, (d) => d[0])]) // "D for Domain, D for Data"
-											 .range([padding, w - padding]); // Range of transformed raw data.
+											 .domain([0, d3.max(years, (y) => y)]) // "D for Domain, D for Data"
+											 .range([padding, w - padding]); // Scaled range transformed raw data.
 
 			// Create y scale (GDP).
 			const yScale = d3.scaleLinear()
@@ -47,19 +53,20 @@
 										.append("svg")
 										.attr("width", w)
 										.attr("height", h);
-			// Add rect to svg.
+
+			// Add rects to svg.
 			svg.selectAll("rect")
 				 .data(dataset)
 				 .enter()
 				 .append("rect")
-				 .attr("x", (d) => xScale(d[0] + 10))
-				 .attr("y", (d) => yScale(d[1]))
-				 .attr("width", 25)
+				 .attr("x", (d, i) => {
+					 return xScale(i);
+				 })
+				 .attr("y", (d) => yScale(h - d[1]))
+				 .attr("width", 7)
 				 .attr("height", (d, i) => {
-					 return 3 * d[1]
+					 return d[1]
 				 });
-
-			console.log(dataset);
 
 			if (req.status >= 200 && req.status < 400) {
 				dataset.forEach(d => {
