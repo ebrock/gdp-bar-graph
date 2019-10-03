@@ -29,6 +29,21 @@
 			var dataset = json.data;
 			var newdata = [];
 
+			// log out dataset.
+			dataset.forEach(d => {
+				// dataset[0] -> date
+				console.log(d[0]);
+				// dataset[1] -> gdp
+				console.log(d[1]);
+			})
+
+			// log out min / max
+			console.log(d3.min(dataset, (d) => d[0]));
+			console.log(d3.min(dataset, (d) => d[1]));
+			console.log(d3.max(dataset, (d) => d[0]));
+			console.log(Date(d3.max(dataset, (d) => d[1])));
+
+
 			if (req.status >= 200 && req.status < 400) {
 				dataset.forEach(d => {
 					newdata.push([d[0].match(/\d{4}/gm).toString(), d[1]]);
@@ -37,20 +52,18 @@
 				console.log("error");
 			}
 
-			console.log(newdata);
-
 			const w = 1000;
 			const h = 500;
 			const padding = 60;
 
 			// Create x scale (year).
 			const xScale = d3.scaleLinear()
-											 .domain([0, d3.max(newdata, (d) => d[0])]) // "D for Domain, D for Data"
+											 .domain([d3.min(dataset, (d) => d[0].match(/\d{4}/gm)), d3.max(dataset, (d) => d[0]).match(/\d{4}/gm)]) // "D for Domain, D for Data"
 											 .range([padding, (w - padding)]); // Scaled range transformed raw data.
 
 			// Create y scale (GDP).
 			const yScale = d3.scaleLinear()
-											 .domain([0, d3.max(newdata, (d) => d[1])])
+											 .domain([0, d3.max(dataset, (d) => d[1])])
 											 .range([(h - padding), padding]);
 
 			// Create svg.
@@ -67,22 +80,23 @@
 				 .attr("fill", "#193c75")
 				 .attr("class", "bar")
 				 .attr("x", (d, i) => {
-					 // return xScale(i * 7);
-					 return (d[0], (i * 3) + padding);
+					 return xScale(d[0], (i * 20));
 				 })
 				 .attr("y", (d, i) => {
-					 return yScale(d[1])
+					 // - padding
+					 return yScale(d[1]);
 				 })
 				 .attr("width", 4)
 				 .attr("height", (d, i) => {
-					 return h - yScale(d[1]);
+					 return h - yScale(d[1]) - padding;
 				 })
 				 // Add tool-tip.
 				 .append("title")
 				 .text((d) => d[1]);
 
-			const xAxis = d3.axisBottom(xScale);
-			const yAxis = d3.axisLeft(yScale);
+			// Create axes.
+			const xAxis = d3.axisBottom(xScale).tickFormat(d3.format("d"));
+			const yAxis = d3.axisLeft(yScale).tickFormat(d3.format("$,.0f"));
 
 			svg.append("g")
 				 .attr("transform", "translate(0, " + (h - padding) + ")")
