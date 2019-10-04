@@ -32,7 +32,7 @@
 			// log out dataset.
 			dataset.forEach(d => {
 				// dataset[0] -> date
-				console.log(d[0]);
+				console.log(d[0].replace(/-/gm, ""));
 				// dataset[1] -> gdp
 				console.log(d[1]);
 			})
@@ -58,8 +58,9 @@
 
 			// Create x scale (year).
 			const xScale = d3.scaleLinear()
-											 .domain([d3.min(dataset, (d) => d[0].match(/\d{4}/gm)), d3.max(dataset, (d) => d[0]).match(/\d{4}/gm)]) // "D for Domain, D for Data"
-											 .range([padding, (w - padding)]); // Scaled range transformed raw data.
+											 .domain([d3.min(dataset, (d) => d[0].match(/\d{4}/gm)),
+											 					d3.max(dataset, (d) => d[0]).match(/\d{4}/gm)]) // "D for Domain, D for Data"
+											 .range([padding, (w - padding)]); // Scaled output range.
 
 			// Create y scale (GDP).
 			const yScale = d3.scaleLinear()
@@ -74,21 +75,21 @@
 
 			// Add rects to svg.
 			svg.selectAll("rect")
-				 .data(newdata)
+				 .data(dataset)
 				 .enter()
 				 .append("rect")
 				 .attr("fill", "#193c75")
 				 .attr("class", "bar")
 				 .attr("x", (d, i) => {
-					 return xScale(d[0], (i * 20));
+					 console.log(d[0]);
+					 return xScale(d[0]), i * 3.2 + padding;
 				 })
 				 .attr("y", (d, i) => {
-					 // - padding
 					 return yScale(d[1]);
 				 })
-				 .attr("width", 4)
+				 .attr("width", 3)
 				 .attr("height", (d, i) => {
-					 return h - yScale(d[1]) - padding;
+					 return h - yScale(d[1]) - padding; // Minus h and remove padding.
 				 })
 				 // Add tool-tip.
 				 .append("title")
