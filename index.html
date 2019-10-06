@@ -40,19 +40,12 @@
 			const h = 500;
 			const padding = 60;
 
-			dataset.forEach(d => {
-				console.log(d[0]);
-			})
-
 			// Map Date objects to variable. For some reason, I couldn't get use
 			// a new Date within the scaleTime() method. I had to make a new variable
 			// here.
 			var years = dataset.map(d => {
 				return new Date(d[0]);
 			})
-
-			console.log(years);
-			console.log(d3.extent(years));
 
 			// Create x scale (year).
 			// "D for Domain, D for Data"
@@ -104,7 +97,6 @@
 			// Create axes.
 			const xAxis = d3.axisBottom(xScale);
 			const yAxis = d3.axisLeft(yScale)
-											.tickFormat(d3.format("$,.0f"));
 
 			svg.append("g")
 				 .attr("transform", "translate(0, " + (h - padding) + ")")
