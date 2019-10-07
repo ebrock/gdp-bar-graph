@@ -8,17 +8,33 @@
 </head>
 
 <style>
+	.wrapper {
+		border: 2px solid black;
+	}
+
 	.bar:hover {
 		fill: gray;
 	}
 
-	.class {
+	.title {
+		font-family: Arial;
+		font-size: 40px;
+		text-align: center;
+	}
 
+	.tooltip {
+		color: white;
+		background-color: black;
+		font-family: Arial;
+		width: 150px;
+		height: 50px;
+		text-align: center;
 	}
 
 	.tick {
 		color: orangered;
 	}
+
 </style>
 
 <body>
@@ -59,11 +75,24 @@
 											 .domain([0, d3.max(dataset, (d) => d[1])])
 											 .range([(h - padding), padding]);
 
+			// Create wrapper.
+			const wrapper = d3.select("body")
+												.append("div")
+												.attr("class", "wrapper");
+
 			// Create svg.
-			const svg = d3.select("body")
-										.append("svg")
-										.attr("width", w)
-										.attr("height", h);
+			const svg = wrapper.append("svg")
+												 .attr("width", w)
+												 .attr("height", h);
+
+			// Create tooltip
+			const tooltip = d3.select("body")
+											.append("div")
+											.attr("id", "tooltip")
+											.attr("class", "tooltip")
+											.style("position", "absolute")
+											.style("z-index", 10)
+											.style("visibility", "hidden");
 
 			// Add rects to svg.
 			svg.selectAll("rect")
@@ -88,11 +117,24 @@
 				 .attr("width", 3)
 				 .attr("height", (d, i) => {
 					 return h - yScale(d[1]) - padding; // Minus h and remove padding.
-				 })
-				 // Add tool-tip.
-				 .append("title")
-				 .attr("id", "tooltip")
-				 .text((d) => d[1]);
+				 });
+
+
+			// Add div tooltip.
+			var bar = svg.selectAll("rect")
+				.on("mouseover", function(d) {
+					tooltip.style("visibility", "visible");
+					tooltip.attr("data-date", d[0]);
+					tooltip.html("Date: " + d[0] + "\n"
+											 + "GDP: " + d[1]);
+
+				})
+				.on("mousemove", function() {
+					tooltip.style("top", event.pageY-20+"px").style("left", event.pageX+10+"px");
+				})
+				.on("mouseout", function() {
+					return tooltip.style("visibility", "hidden")
+				});
 
 			// Create axes.
 			const xAxis = d3.axisBottom(xScale);
@@ -114,6 +156,7 @@
 		d3.select("body")
 	  	.append("h1")
 			.attr("id", "title")
+			.attr("class", "title")
 	  	.text("United States GDP");
 
 	</script>
