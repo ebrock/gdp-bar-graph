@@ -9,7 +9,10 @@
 
 <style>
 	.wrapper {
-		border: 2px solid black;
+		/* border: 2px solid black; */
+		width: 1000px;
+		margin: auto;
+		box-shadow: 2px 2px 10px black, -2px -2px 10px black;
 	}
 
 	.bar:hover {
@@ -78,6 +81,7 @@
 			// Create wrapper.
 			const wrapper = d3.select("body")
 												.append("div")
+												.attr("id", "wrapper")
 												.attr("class", "wrapper");
 
 			// Create svg.
@@ -149,6 +153,14 @@
 				 .attr("transform", "translate(" + padding + ", 0)")
 				 .attr("id", "y-axis")
 				 .call(yAxis);
+
+			// trying to add a label
+			svg.append("text")
+				 .attr("transform", "rotate(-90)")
+				 .attr("y", 0 + padding + 25)
+				 .attr("x", 0 - h/4)
+				 .style("text-anchor", "middle")
+				 .text("testing1234")
 		};
 
 		req.send();
